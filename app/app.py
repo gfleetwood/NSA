@@ -4,7 +4,6 @@ import nostr_helper
 
 app = Flask(__name__)
 
-
 @app.route('/v0/verify', methods=['POST'])
 def verify_API():
     try:
@@ -59,7 +58,6 @@ def send_dm():
         return jsonify(nostr_helper.send_dm(text, private_key, public_key, relays))
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred'}), 500
-
 
 def handler(event, context):
     return serverless_wsgi.handle_request(app, event, context)

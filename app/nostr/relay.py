@@ -30,12 +30,13 @@ class RelayProxyConnectionConfig:
     type: Optional[str] = None
 
 
+from dataclasses import dataclass, field
 
 @dataclass
 class Relay:
     url: str
     message_pool: MessagePool
-    policy: RelayPolicy = RelayPolicy()
+    policy: RelayPolicy = field(default_factory=RelayPolicy) #RelayPolicy()
     ssl_options: Optional[dict] = None
     proxy_config: RelayProxyConnectionConfig = None
 
