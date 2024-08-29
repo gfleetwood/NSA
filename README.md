@@ -1,6 +1,6 @@
 # Nostr Serverless API
 
-This fork uses Modal (https://modal.com/) instead of AWS fot the deployment of the API. Running `modal deploy modal_deploy.py` will deploy the app and return an endpoint. One change made to the original code is in relay.py where:
+This fork uses Modal (https://modal.com/) instead of AWS fot the deployment of the API. Running `modal deploy modal_deploy.py` will deploy the app and return an endpoint. One change made to the original code is in `relay.py` where:
 
 `policy: RelayPolicy = RelayPolicy()`
 
@@ -8,7 +8,7 @@ Was replaced by:
 
 `policy: RelayPolicy = field(default_factory=RelayPolicy)`
 
-And an additional import of `field` from `dataclasses`. I also deleted files related to the original AWS deployment including the Dockerfile in favor of using Modal's API. Everything else below is from the original README with sections removed and text removed dealing with deployment to AWS. See also the following resources:
+And an additional import of `field` from `dataclasses`. I also deleted files related to the original AWS deployment including the Dockerfile in favor of using Modal's API. Everything else below is from the original README with sections and text removed dealing with deployment to AWS. See also the following resources:
 
 * https://www.youtube.com/watch?v=i1241TceGGc
 * https://replit.com/@GaryOKeeffe/NostrServerlessAPIDemo#main.py
