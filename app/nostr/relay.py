@@ -1,6 +1,6 @@
 import json
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from queue import Queue
 from threading import Lock
 from typing import Optional
@@ -20,17 +20,11 @@ class RelayPolicy:
     def to_json_object(self) -> Dict[str, bool]:
         return {"read": self.should_read, "write": self.should_write}
 
-
-
-
 @dataclass
 class RelayProxyConnectionConfig:
     host: Optional[str] = None
     port: Optional[int] = None
     type: Optional[str] = None
-
-
-from dataclasses import dataclass, field
 
 @dataclass
 class Relay:

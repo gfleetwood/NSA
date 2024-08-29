@@ -1,60 +1,18 @@
 # Nostr Serverless API
 
-The Nostr Serverless API (NSA) project allows anyone with an AWS account to quickly and cheaply deploy and maintain their own Nostr API. Our goal is to make a Data Scientist's user experience working with Nostr data amazing. The API is in the early alpha stage, so expect changes. If this is a project that interests you then please help!
+This fork uses Modal (https://modal.com/) instead of AWS fot the deployment of the API. Running `modal deploy modal_deploy.py` will deploy the app and return an endpoint. One change made to the original code is in relay.py where:
 
-## System Architecture
-<details>
+`policy: RelayPolicy = RelayPolicy()`
 
-NSA's system architecture is outlined in **Figure 1** below. Specifically, this project consists of an AWS API Gateway that routes inbound API calls into an AWS Lambda function, which, in turn, spins up a Dockerized Flask application to process the API request. This architecture was chosen to minimize operating costs at low traffic volumes. We use an AWS Cloudformation Template to automate cloud service orchestration so that deploying (and maintaining) the API is trivial.
+Was replaced by:
 
-<p align="center">
-  <img src="https://github.com/garyokeeffe/NSA/blob/main/resources/NostrServerlessAPI.png?raw=true"><br>
-  <b>Figure 1</b>: Nostr Serverless API System Architecture Diagram
-</p>
+`policy: RelayPolicy = field(default_factory=RelayPolicy)`
 
-</details>
+And an additional import of `field` from `dataclasses`. I also deleted files related to the original AWS deployment including the Dockerfile in favor of using Modal's API. Everything else below is from the original README with sections removed and text removed dealing with deployment to AWS. See also the following resources:
 
-## Deploying the API
-<details>
-<summary>Details:</summary>
-
-### Prerequisites
-
-- An AWS account
-- Docker installed, running, and configured to build `arm64` images
-- AWS CLI installed and configured with your AWS credentials.
-
-### Steps:
-
-<details>
-<summary><b>Step 1: Build and push the Docker image</b> </summary>
-
-Navigate to the directory containing the Dockerfile (`Dockerfile`) and run the following commands (replacing `ACCOUNT_ID` with your AWS account ID and `REGION` with your desired AWS region):
-
-```bash
-aws ecr get-login-password --region REGION | docker login --username AWS --password-stdin ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com # Log into your AWS account (remember to replace REGION and ACCOUNT_ID)
-aws ecr create-repository --repository-name nostr-app --region REGION # Create your ECR (if the ECR doesn't already exist)
-docker build -t nostr-app . # Build the docker image giving it the name "nostr-app" 
-docker tag nostr-app:latest ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/nostr-app:latest # Tag your docker image with the ECR name
-docker push ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/nostr-app:latest # Push your docker image onto the ECR
-```
-</details>
-<details>
-<summary><b>Step 2: Deploy the CloudFormation stack</b></summary>
-
-Navigate to the directory containing the CloudFormation template (`cloudformationtemplate.yaml`) and run the following command, replacing `STACK_NAME` with your desired CloudFormation stack name and `DOCKER_IMAGE_URI` with the URI of the Docker image you just pushed:
-
-   ```bash
-   aws cloudformation deploy --template-file ./cloudformationtemplate.yaml --stack-name STACK_NAME --parameter-overrides DockerImageUri=DOCKER_IMAGE_URI --capabilities CAPABILITY_IAM
-   ```
-
-   After successful deployment, you can access the Flask application via the URL of the API Gateway that was created. You can find your API's base URL by running the following command after successful deployment:
-```bash
-aws cloudformation describe-stacks --stack-name STACK_NAME --query 'Stacks[].Outputs'
-```
-(remember to replace `STACK_NAME` with the name of your stack (which is defined when you ran `aws cloudformation deploy` in the last step).
-</details>
-</details>
+* https://www.youtube.com/watch?v=i1241TceGGc
+* https://replit.com/@GaryOKeeffe/NostrServerlessAPIDemo#main.py
+* https://replit.com/@GaryOKeeffe/NostrChromaExample3#main.py
 
 ## Using the API
 
@@ -63,7 +21,7 @@ aws cloudformation describe-stacks --stack-name STACK_NAME --query 'Stacks[].Out
   
 Full API documentation is available to Open API standards in this project's `openapi.yaml` file, and is also hosted on [Swagger Hub here](https://app.swaggerhub.com/apis/GARYJOKEEFFE/nostr-serverless_api/0.0.1). We also briefly describe them in this section.
 
-Recall, you must first get your API's Base URL via the `describe-stacks` command (which can be found in Step 2 of the **Deploying the API** section). Once you have the base URL, you will be able to reach the following endpoints (with more endpoints to follow soon):
+Once you have the base URL, you will be able to reach the following endpoints (with more endpoints to follow soon):
 
 <details>
 <summary>Verify the API is running correctly</summary>
@@ -112,7 +70,6 @@ Recall, you must first get your API's Base URL via the `describe-stacks` command
 - text = [STRING OF YOUR NOTE's CONTENT]
 
 </details>
-
 
 <details>
 <summary>Fetch Public Notes</summary>
