@@ -69,7 +69,7 @@ pk = 'nsec'
 #     pass
 
 # filters = Filter()
-# filters.authors = ['npub1g5camgwm4kksc8yjx2kpk67xuh0z0zqh8vr0lhzyy6uldvja47vs2e5el9']
+# filters.authors = ['npub']
 # filters.limit = 10
 
 # notes = fetch_notes(base_url, filters, relays)
